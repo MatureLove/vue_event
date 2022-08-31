@@ -6,7 +6,7 @@
       <!-- 标题的盒子 -->
       <div class="title-box"></div>
       <!-- 注册的表单区域 -->
-      <el-form :model="form" ref="form" :rules="regRules">
+      <el-form :model="form" ref="regform" :rules="regRules">
         <el-form-item prop="username">
           <el-input v-model="form.username" placeholder="请输入用户名" clearable></el-input>
         </el-form-item>
@@ -17,8 +17,8 @@
           <el-input v-model="form.repassword" placeholder="请再次确认密码" show-password></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" class="btn-reg" @click="register">注册</el-button>
-          <el-link type="info">去登陆</el-link>
+          <el-button type="primary" class="btn-reg" @click="registerFn">注册</el-button>
+          <el-link type="info" @click="goLogin">去登陆</el-link>
         </el-form-item>
       </el-form>
     </div>
@@ -77,8 +77,32 @@ export default {
     }
   },
   methods: {
-    register () {
-
+    // 注册新用户
+    registerFn () {
+      // 进行表单验证
+      this.$refs.regform.validate(async valid => {
+        if (valid) {
+          // console.log(this.form)
+          try {
+            const { data } = await this.$store.dispatch('user/userRegister', this.form)
+            console.log(data)
+            if (data.code !== 0) {
+              return this.$message.error(data.message)
+            }
+            this.$message.success(data.message)
+            this.$router.push('/login')
+          } catch (error) {
+            console.log(error)
+          }
+        } else {
+          // 表单验证失败
+          return false
+        }
+      })
+    },
+    // 跳转登录页
+    goLogin () {
+      this.$router.push('/login')
     }
   }
 }
