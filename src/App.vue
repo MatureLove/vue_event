@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="container-box">
    <router-view></router-view>
   </div>
 </template>
@@ -10,4 +10,7 @@ export default {
 }
 </script>
 <style lang="less" scoped>
+  .container-box{
+    height: 100%;
+  }
 </style>
