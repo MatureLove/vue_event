@@ -1,13 +1,15 @@
 <template>
   <div>
-   <router-view></router-view>
+    register页面
   </div>
 </template>
+
 <script>
 export default {
-  name: 'App'
-
+  name: 'Register'
 }
 </script>
+
 <style lang="less" scoped>
+
 </style>

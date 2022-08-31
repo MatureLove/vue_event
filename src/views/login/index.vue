@@ -1,13 +1,15 @@
 <template>
-  <div>
-   <router-view></router-view>
-  </div>
+    <div>
+        login页面
+    </div>
 </template>
+
 <script>
 export default {
-  name: 'App'
-
+  name: 'Login'
 }
 </script>
+
 <style lang="less" scoped>
+
 </style>
