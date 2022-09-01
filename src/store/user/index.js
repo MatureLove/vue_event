@@ -1,5 +1,6 @@
 // 引入api接口
 import { registerAPI, loginAPI } from '@/api/index'
+import { getToken, setToken, removeToken } from '@/utils/token'
 export default {
   // 开启命名空间
   namespaced: true,
@@ -13,6 +14,7 @@ export default {
       const { data } = await loginAPI(loginInfo)
       if (data.code === 0) {
         commit('UPDATETOKEN', data.token)
+        setToken(data.token)
         return data.message
       } else {
         return Promise.reject(new Error())
@@ -23,10 +25,15 @@ export default {
     // 存储token
     UPDATETOKEN (state, val) {
       state.token = val
+    },
+    // 退出登录
+    QUITLOGIN (state) {
+      state.token = ''
+      removeToken()
     }
   },
   state: {
-    token: JSON.parse(localStorage.getItem('vuex')).user.token
+    token: getToken()
   },
   getters: {}
 

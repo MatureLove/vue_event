@@ -10,34 +10,53 @@
                 <el-submenu index="1">
                     <template slot="title">
                         <!-- 头像 -->
-                        <img src="../../assets/images/logo.png" alt="" class="avatar" />
+                        <!-- <img src="../../assets/images/logo.png" alt="" class="avatar" /> -->
+                            <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" class="avatar">
+                            </el-avatar>
                         <span>个人中心</span>
                     </template>
                     <el-menu-item index="1-1"><i class="el-icon-s-operation"></i>基本资料</el-menu-item>
                     <el-menu-item index="1-2"><i class="el-icon-camera"></i>更换头像</el-menu-item>
                     <el-menu-item index="1-3"><i class="el-icon-key"></i>重置密码</el-menu-item>
                 </el-submenu>
-                <el-menu-item index="2"><i class="el-icon-switch-button"></i>退出</el-menu-item>
+                <el-menu-item index="2" @click="quitLogin"><i class="el-icon-switch-button"></i>退出</el-menu-item>
             </el-menu>
         </el-header>
         <el-container>
-                <!-- 侧边栏区域 -->
-                <el-aside width="200px">Aside</el-aside>
-                <el-container>
-                    <!-- 页面主体区域 -->
-                    <el-main>
-                        Main.vue后台主页
-                    </el-main>
-                    <!-- 底部 footer 区域 -->
-                    <el-footer>© www.itheima.com - 黑马程序员</el-footer>
-                </el-container>
+            <!-- 侧边栏区域 -->
+            <el-aside width="200px">Aside</el-aside>
+            <el-container>
+                <!-- 页面主体区域 -->
+                <el-main>
+                    Main.vue后台主页
+                </el-main>
+                <!-- 底部 footer 区域 -->
+                <el-footer>© www.itheima.com - 黑马程序员</el-footer>
+            </el-container>
         </el-container>
     </el-container>
 </template>
 
 <script>
 export default {
-  name: 'Layout'
+  name: 'Layout',
+  methods: {
+    quitLogin () {
+      this.$confirm('确定要离开我了吗， 不爱我了吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$store.commit('user/QUITLOGIN')
+        this.$router.push('/login')
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消退出'
+        })
+      })
+    }
+  }
 }
 </script>
 
@@ -75,7 +94,7 @@ export default {
       border-radius: 50%;
       width: 35px;
       height: 35px;
-      background-color: #fff;
+    //   background-color: #fff;
       margin-right: 10px;
       object-fit: cover;
   }
