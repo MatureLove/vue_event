@@ -1,7 +1,7 @@
 export default [
   {
     path: '/',
-    redirect: '/login'
+    component: () => import('@/views/layout')
   },
   {
     path: '/register',
