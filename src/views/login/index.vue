@@ -54,6 +54,7 @@ export default {
           try {
             const result = await this.$store.dispatch('user/userLogin', this.loginForm)
             this.$message.success(result)
+            this.$router.push('/')
           } catch (error) {
             this.$message.error(error)
           }
