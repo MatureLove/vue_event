@@ -16,7 +16,7 @@
           <el-input v-model="loginForm.password" placeholder="请输入密码" show-password></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" class="btn-login">登录</el-button>
+          <el-button type="primary" class="btn-login" @click="loginFn">登录</el-button>
           <el-link type="info" @click="$router.push('/register')">去注册</el-link>
         </el-form-item>
       </el-form>
@@ -45,6 +45,23 @@ export default {
           { pattern: /^\S{6,15}$/, message: '密码必须是6-15的非空字符', trigger: 'blur' }
         ]
       }
+    }
+  },
+  methods: {
+    loginFn () {
+      this.$refs.loginRef.validate(async valid => {
+        if (valid) {
+          try {
+            const result = await this.$store.dispatch('user/userLogin', this.loginForm)
+            this.$message.success(result)
+          } catch (error) {
+            this.$message.error(error)
+          }
+        } else {
+          // 表单验证失败
+          return false
+        }
+      })
     }
   }
 }
