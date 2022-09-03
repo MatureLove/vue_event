@@ -1,5 +1,5 @@
 // 引入api接口
-import { registerAPI, loginAPI } from '@/api/index'
+import { registerAPI, loginAPI, reqGetUserInfo } from '@/api/index'
 import { getToken, setToken, removeToken } from '@/utils/token'
 export default {
   // 开启命名空间
@@ -19,6 +19,12 @@ export default {
       } else {
         return Promise.reject(new Error())
       }
+    },
+    // 获取用户信息
+    async getUserInfo ({ commit }) {
+      const { data } = await reqGetUserInfo()
+      console.log(1)
+      commit('GETUSERINFO', data.data)
     }
   },
   mutations: {
@@ -29,12 +35,22 @@ export default {
     // 退出登录
     QUITLOGIN (state) {
       state.token = ''
+      state.userinfo = {}
       removeToken()
+    },
+    // 获取用户信息
+    GETUSERINFO (state, val) {
+      state.userinfo = val
     }
   },
   state: {
-    token: getToken()
+    token: getToken(), // token
+    userinfo: {}// 用户信息 email id nickname user_pic username
   },
-  getters: {}
+  getters: {
+    username: state => state.userinfo.username,
+    user_pic: state => state.userinfo.user_pic,
+    nickname: state => state.userinfo.nickname
+  }
 
 }
