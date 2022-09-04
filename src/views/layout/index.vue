@@ -30,6 +30,7 @@
           <img src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" alt="" v-else>
           <span>欢迎{{ nickname || username }}</span>
         </div>
+        <NavList></NavList>
       </el-aside>
       <el-container>
         <!-- 页面主体区域 -->
@@ -45,6 +46,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import NavList from './navList/index.vue'
 export default {
   name: 'Layout',
   methods: {
@@ -66,7 +68,8 @@ export default {
   },
   computed: {
     ...mapGetters('user', ['username', 'nickname', 'user_pic'])
-  }
+  },
+  components: { NavList }
 }
 </script>
 
