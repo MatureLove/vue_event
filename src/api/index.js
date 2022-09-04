@@ -36,3 +36,13 @@ export const reqGetUserInfo = () => {
     }
   })
 }
+
+export const reqGetNavInfo = () => {
+  return request({
+    url: '/my/menus',
+    method: 'get',
+    headers: {
+      Authorization: store.state.user.token
+    }
+  })
+}

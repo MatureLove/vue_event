@@ -8,43 +8,23 @@
 
      -->
     <el-menu default-active="2" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose"
-        background-color="#23262e" text-color="#fff" active-text-color="#ffd04b" unique-opened>
-        <el-menu-item index="/home">
-            <i class="el-icon-s-home"></i>
-            <span slot="title">首页</span>
-        </el-menu-item>
-        <el-submenu index="/file">
-            <template slot="title">
-                <i class="el-icon-s-order"></i>
-                <span>文件管理</span>
-            </template>
-            <el-menu-item index="/file1">
-                <i class="el-icon-s-data"></i>
-                <span>文件分类</span>
+        background-color="#23262e" text-color="#fff" active-text-color="#ffd04b" unique-opened  router>
+        <template v-for="item in navList">
+            <el-menu-item :index="item.indexPath" :key="item.indexPath" v-if="!item.children">
+                <i :class="item.icon"></i>
+                <span slot="title">{{item.title}}</span>
             </el-menu-item>
-            <el-menu-item index="/file2">
-                <i class="el-icon-document-copy"></i>
-                <span>文件列表</span>
-            </el-menu-item>
-        </el-submenu>
-        <el-submenu index="/my">
-            <template slot="title">
-                <i class="el-icon-s-custom"></i>
-                <span>个人中心</span>
-            </template>
-            <el-menu-item index="/my1">
-                <i class="el-icon-s-fold"></i>
-                <span>基本资料</span>
-            </el-menu-item>
-            <el-menu-item index="/my2">
-                <i class="el-icon-camera"></i>
-                <span>更换头像</span>
-            </el-menu-item>
-            <el-menu-item index="/my3">
-                <i class="el-icon-key"></i>
-                <span>重置密码</span>
-            </el-menu-item>
-        </el-submenu>
+            <el-submenu :index="item.indexPath" :key="item.indexPath" v-if="item.children">
+                <template slot="title">
+                    <i :class="item.icon"></i>
+                    <span>{{item.title}}</span>
+                </template>
+                <el-menu-item :index="childItem.indexPath" v-for="childItem in item.children" :key="childItem.indexPath">
+                    <i :class="childItem.icon"></i>
+                    <span>{{childItem.title}}</span>
+                </el-menu-item>
+            </el-submenu>
+        </template>
     </el-menu>
 </template>
 
@@ -57,6 +37,14 @@ export default {
     },
     handleClose (key, keyPath) {
       console.log(key, keyPath)
+    }
+  },
+  created () {
+    this.$store.dispatch('layout/getNavInfo')
+  },
+  computed: {
+    navList () {
+      return this.$store.state.layout.navList
     }
   }
 }
