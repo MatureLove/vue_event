@@ -12,6 +12,7 @@ router.beforeEach(async (to, from, next) => {
   const token = store.state.user.token
   // 获取用户名。通过这个判断是否获取用户信息
   const username = store.state.user.userinfo.username
+  const whiteList = ['/login', '/register']
   // token存在
   if (token) {
     // 如果用户已经登录，还要跳转登录页，直接跳转到首页
@@ -34,7 +35,11 @@ router.beforeEach(async (to, from, next) => {
       }
     }
   } else {
-    next()
+    if (whiteList.includes(to.path)) {
+      next()
+    } else {
+      next('/login')
+    }
   }
 })
 export default router

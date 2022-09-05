@@ -35,7 +35,7 @@
       <el-container>
         <!-- 页面主体区域 -->
         <el-main>
-          Main.vue后台主页
+          <router-view></router-view>
         </el-main>
         <!-- 底部 footer 区域 -->
         <el-footer>© www.itheima.com - 黑马程序员</el-footer>

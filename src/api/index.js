@@ -1,6 +1,5 @@
 // 导入发送请求的函数
 import request from '@/utils/request'
-import store from '@/store'
 // 用户注册 data包含username passwo repassword
 export const registerAPI = (data) => {
   return request({
@@ -30,19 +29,13 @@ export const loginAPI = ({ username, password }) => {
  */
 export const reqGetUserInfo = () => {
   return request({
-    url: '/my/userinfo',
-    headers: {
-      Authorization: store.state.user.token
-    }
+    url: '/my/userinfo'
   })
 }
 
 export const reqGetNavInfo = () => {
   return request({
     url: '/my/menus',
-    method: 'get',
-    headers: {
-      Authorization: store.state.user.token
-    }
+    method: 'get'
   })
 }

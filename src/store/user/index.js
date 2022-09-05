@@ -23,7 +23,7 @@ export default {
     // 获取用户信息
     async getUserInfo ({ commit }) {
       const { data } = await reqGetUserInfo()
-      console.log(1)
+      // console.log(1)
       commit('GETUSERINFO', data.data)
     }
   },
