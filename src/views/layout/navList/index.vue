@@ -7,7 +7,7 @@
         menu下包含menu-item代表一行, 然后submenu是带子菜单的容器
 
      -->
-    <el-menu default-active="2" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose"
+    <el-menu :default-active="$route.path" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose"
         background-color="#23262e" text-color="#fff" active-text-color="#ffd04b" unique-opened  router>
         <template v-for="item in navList">
             <el-menu-item :index="item.indexPath" :key="item.indexPath" v-if="!item.children">

@@ -7,6 +7,18 @@ export default [
       {
         path: '/home',
         component: () => import('@/views/home')
+      },
+      {
+        path: '/user-info',
+        component: () => import('@/views/user/userinfo')
+      },
+      {
+        path: '/user-avatar',
+        component: () => import('@/views/user/updateAvatar')
+      },
+      {
+        path: '/user-pwd',
+        component: () => import('@/views/user/resetPassword')
       }
     ]
   },

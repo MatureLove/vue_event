@@ -32,10 +32,31 @@ export const reqGetUserInfo = () => {
     url: '/my/userinfo'
   })
 }
-
+/**
+ * 获取导航栏信息
+ * @returns
+ */
 export const reqGetNavInfo = () => {
   return request({
     url: '/my/menus',
     method: 'get'
+  })
+}
+/**
+ * 更新用户信息
+ * @param {*} param0 id, username, nickname, email, user_pic
+ * @returns promise对象
+ */
+export const reqUpdateUserInfo = ({ id, username, nickname, email, user_pic }) => {
+  return request({
+    url: '/my/userinfo',
+    method: 'put',
+    data: {
+      id,
+      username,
+      nickname,
+      email,
+      user_pic
+    }
   })
 }

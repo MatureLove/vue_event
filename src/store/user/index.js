@@ -1,5 +1,5 @@
 // 引入api接口
-import { registerAPI, loginAPI, reqGetUserInfo } from '@/api/index'
+import { registerAPI, loginAPI, reqGetUserInfo, reqUpdateUserInfo } from '@/api/index'
 import { getToken, setToken, removeToken } from '@/utils/token'
 export default {
   // 开启命名空间
@@ -25,6 +25,15 @@ export default {
       const { data } = await reqGetUserInfo()
       // console.log(1)
       commit('GETUSERINFO', data.data)
+    },
+    // 更新用户信息
+    async updateUserInfo ({ commit }, userinfo) {
+      const { data } = await reqUpdateUserInfo(userinfo)
+      if (data.code === 0) {
+        return data.message
+      } else {
+        return Promise.reject(new Error(data.message))
+      }
     }
   },
   mutations: {
@@ -50,7 +59,8 @@ export default {
   getters: {
     username: state => state.userinfo.username,
     user_pic: state => state.userinfo.user_pic,
-    nickname: state => state.userinfo.nickname
+    nickname: state => state.userinfo.nickname,
+    id: state => state.userinfo.id
   }
 
 }
