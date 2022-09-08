@@ -10,8 +10,8 @@
         <el-submenu index="1">
           <template slot="title">
             <!-- 头像 -->
-            <!-- <img src="../../assets/images/logo.png" alt="" class="avatar" /> -->
-            <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" class="avatar">
+            <img v-if="!user_pic" src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" alt="" class="avatar" />
+            <el-avatar v-else :src="user_pic" class="avatar">
             </el-avatar>
             <span>个人中心</span>
           </template>

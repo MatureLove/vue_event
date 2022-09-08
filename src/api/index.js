@@ -60,3 +60,32 @@ export const reqUpdateUserInfo = ({ id, username, nickname, email, user_pic }) =
     }
   })
 }
+/**
+ * 上传用户头像
+ * @param {*} avatar base64字符串
+ * @returns
+ */
+export const updateAvatarAPI = (avatar) => {
+  return request({
+    url: '/my/update/avatar',
+    method: 'PATCH',
+    data: {
+      avatar
+    }
+  })
+}/**
+ * 修改用户密码
+ * @param {*} param0 原密码 新密码 确认密码old_pwd, new_pwd, re_pwd
+ * @returns promise对象
+ */
+export const updatePwdAPI = ({ old_pwd, new_pwd, re_pwd }) => {
+  return request({
+    url: '/my/updatepwd',
+    method: 'PATCH',
+    data: {
+      old_pwd,
+      new_pwd,
+      re_pwd
+    }
+  })
+}

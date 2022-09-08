@@ -12,7 +12,7 @@
       <div class="btn-box">
         <input type="file" accept="image/*" style="display: none" ref="iptRef" @change="onFileChange" />
         <el-button type="primary" icon="el-icon-plus" @click="chooseImg">选择图片</el-button>
-        <el-button type="success" icon="el-icon-upload" :disabled="avatar === ''">上传头像</el-button>
+        <el-button type="success" icon="el-icon-upload" :disabled="avatar === ''" @click="uploadAvatar">上传头像</el-button>
       </div>
     </div>
 </el-card>
@@ -51,7 +51,16 @@ export default {
           // 通过e.target.result获取读取的结果，值是字符串base64格式的字符串
           this.avatar = e.target.result
         }
+        // 使用URL.createObjURL()来转换文件变成图片地址(纯前端本地)
+        // this.avatar = URL.createObjectURL(files[0])
       }
+    },
+    // 上传头像
+    async uploadAvatar () {
+      const { data } = await this.$store.dispatch('user/updateAvatar', this.avatar)
+      if (data.code !== 0) return this.$message.error('更新用户头像失败')
+      this.$message.success('更新用户头像成功')
+      this.$store.dispatch('user/getUserInfo')
     }
   }
 }

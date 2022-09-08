@@ -1,5 +1,5 @@
 // 引入api接口
-import { registerAPI, loginAPI, reqGetUserInfo, reqUpdateUserInfo } from '@/api/index'
+import { registerAPI, loginAPI, reqGetUserInfo, reqUpdateUserInfo, updateAvatarAPI, updatePwdAPI } from '@/api/index'
 import { getToken, setToken, removeToken } from '@/utils/token'
 export default {
   // 开启命名空间
@@ -29,6 +29,19 @@ export default {
     // 更新用户信息
     async updateUserInfo ({ commit }, userinfo) {
       const { data } = await reqUpdateUserInfo(userinfo)
+      if (data.code === 0) {
+        return data.message
+      } else {
+        return Promise.reject(new Error(data.message))
+      }
+    },
+    // 上传用户头像
+    async  updateAvatar ({ commit }, avatar) {
+      return await updateAvatarAPI(avatar)
+    },
+    // 修改用户密码
+    async updatePwd ({ commit }, infoObj) {
+      const { data } = await updatePwdAPI(infoObj)
       if (data.code === 0) {
         return data.message
       } else {
