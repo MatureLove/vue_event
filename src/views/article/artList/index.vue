@@ -41,6 +41,15 @@
           <!-- 使用 v-model 进行双向的数据绑定 -->
           <quill-editor v-model="pubForm.content"></quill-editor>
         </el-form-item>
+        <el-form-item label="文章封面">
+          <!-- 用来显示封面的图片 -->
+          <img src="@/assets/images/cover.jpg" alt="请选择图片" ref="imgRef" class="cover-img">
+          <br>
+          <!-- 文件选择框，默认被隐藏 -->
+          <input type="file" style="display: none;" accept="image/*" ref="iptFileRef" @change="onCoverChangeFn" />
+          <!-- 选择封面的按钮 -->
+          <el-button type="text" @click="chooseImgFn">+ 选择封面</el-button>
+        </el-form-item>
       </el-form>
     </el-dialog>
   </el-card>
@@ -48,6 +57,8 @@
 </template>
 
 <script>
+// 导入默认的封面图片
+import defaultImg from '@/assets/images/cover.jpg'
 export default {
   name: 'artList',
   data() {
@@ -64,7 +75,8 @@ export default {
       pubForm: { // 表单的数据对象
         title: '', // 文章标题
         cate_id: '', // 文章分类
-        content: '' // 文章的内容
+        content: '', // 文章的内容
+        cover_img: null // 用户选择的封面图片（null 表示没有选择任何封面）
       },
       pubFormRules: { // 表单的验证规则对象
         title: [
@@ -110,6 +122,24 @@ export default {
     // 重置按钮
     reset() {
       this.$refs.lineForm.resetFields()
+    },
+    // 选择封面
+    chooseImgFn() {
+      this.$refs.iptFileRef.click()
+    },
+    // 文章封面的上传
+    onCoverChangeFn(e) {
+      const files = e.target.files
+      if (files.length === 0) {
+        // 用户没有选择封面
+        this.pubForm.cover_img = null
+        this.$refs.imgRef.setAttribute('src', defaultImg)
+      } else {
+        // 用户选择了封面
+        this.pubForm.cover_img = files[0]
+        const url = URL.createObjectURL(files[0])
+        this.$refs.imgRef.setAttribute('src', url)
+      }
     }
   }
 }
@@ -131,12 +161,19 @@ export default {
     margin-top: 5px;
   }
 }
+
 // 设置富文本编辑器的默认最小高度
 // ::v-deep作用: 穿透选择, 正常style上加了scope的话, 会给.ql-editor[data-v-hash]属性, 只能选择当前页面标签或者组件的根标签
 // 如果想要选择组件内的标签(那些标签没有data-v-hash值)所以正常选择选不中, 加了::v-deep空格前置的话, 选择器就会变成如下形式
 // [data-v-hash] .ql-editor 这样就能选中组件内的标签的class类名了
 ::v-deep .ql-editor {
-  min-height: 300px;//最小宽度300，可以撑开
+  min-height: 300px; //最小宽度300，可以撑开
+}
+
+.cover-img {
+  width: 400px;
+  height: 280px;
+  object-fit: cover;
 }
 </style>
 <!-- 总结：scoped不会给组件内标签添加data-v属性，你需要用::v-deep 穿透选择组件内的标签设置样式-->
