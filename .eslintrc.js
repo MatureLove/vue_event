@@ -16,6 +16,7 @@ module.exports = {
     // 关闭名称校验
     'vue/multi-word-component-names': 'off',
     // 关闭传参不能用下划线校验
-    camelcase: 'off'
+    camelcase: 'off',
+    'space-before-function-paren': 'off'
   }
 }

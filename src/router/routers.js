@@ -19,6 +19,14 @@ export default [
       {
         path: '/user-pwd',
         component: () => import('@/views/user/resetPassword')
+      },
+      {
+        path: '/art-cate',
+        component: () => import('@/views/article/artCate')
+      },
+      {
+        path: '/art-list',
+        component: () => import('@/views/article/artList')
       }
     ]
   },

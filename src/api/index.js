@@ -89,3 +89,57 @@ export const updatePwdAPI = ({ old_pwd, new_pwd, re_pwd }) => {
     }
   })
 }
+/**
+ *
+ * @returns 获取文章分类列表
+ */
+export const getCateListApi = () => {
+  return request({
+    url: '/my/cate/list'
+  })
+}
+/**
+ * 添加文章分类
+ * @param {*} param0 cate_name,文章分类名字 cate_alias 文章分类别名 string
+ * @returns promise对象
+ */
+export const addCateListApi = ({ cate_name, cate_alias }) => {
+  return request({
+    url: '/my/cate/add',
+    method: 'post',
+    data: {
+      cate_name,
+      cate_alias
+    }
+  })
+}
+/**
+ * 修改文章分类
+ * @param {*} param0 id, cate_alias, cate_name
+ * @returns promise对象
+ */
+export const updateCateListApi = ({ id, cate_alias, cate_name }) => {
+  return request({
+    url: '/my/cate/info',
+    method: 'PUT',
+    data: {
+      id,
+      cate_name,
+      cate_alias
+    }
+  })
+}
+/**
+ * 删除文章分类
+ * @param {*} id id 文章分类id
+ * @returns  promis对象
+ */
+export const deleteCateListApi = (id) => {
+  return request({
+    url: '/my/cate/del',
+    method: 'DELETE',
+    params: {
+      id
+    }
+  })
+}

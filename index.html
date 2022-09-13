@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <input type="text" id="btn" class="txt">
+    <script>
+        const { type, id, className } = document.getElementById('btn')
+        console.log(type, id, className)
+
+        const obj = {
+            key1: 666,
+            key2: true,
+            key3: 'sss',
+            key4() {
+                console.log(key1)
+            }
+        }
+        console.log(obj)
+
+        const fun = (a, b) => {
+            return a + b
+        }
+        const fun1 = a => a
+        console.log(fun(1, 2))
+        console.log(fun1(1))
+        function add(...args){
+            console.log(args)
+        }
+        add(1,2,3,4,5,6)
+
+        const arr1 = [1,2,3,4]
+        const arr2 = [5,6,7,8,9]
+
+        const arr3 = [...arr1,...arr2]
+        console.log(arr3)
+    </script>
+</body>
+
+</html>
