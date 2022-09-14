@@ -41,7 +41,7 @@
           <!-- 使用 v-model 进行双向的数据绑定 -->
           <quill-editor v-model="pubForm.content"></quill-editor>
         </el-form-item>
-        <el-form-item label="文章封面">
+        <el-form-item label="文章封面" prop="cover_img">
           <!-- 用来显示封面的图片 -->
           <img src="@/assets/images/cover.jpg" alt="请选择图片" ref="imgRef" class="cover-img">
           <br>
@@ -49,6 +49,10 @@
           <input type="file" style="display: none;" accept="image/*" ref="iptFileRef" @change="onCoverChangeFn" />
           <!-- 选择封面的按钮 -->
           <el-button type="text" @click="chooseImgFn">+ 选择封面</el-button>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="pubArticleFn('已发布')">发布</el-button>
+          <el-button type="info" @click="pubArticleFn('草稿')">存为草稿</el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
@@ -59,6 +63,18 @@
 <script>
 // 导入默认的封面图片
 import defaultImg from '@/assets/images/cover.jpg'
+/**
+ * 标签和样式中，引入图片直接写静态路径，把路径放在js中的vue变量在赋予是不可以的
+ * 原因：webpack在解析标签的时候，遇到src属性，属性值如果是一个相对路径，他会帮我们去找个这个路径的文件，然后根据文件的大小进行解析，
+ * 小图转换为base64位字符串在赋予给src，如果是大图拷贝图片换个路径赋予给img的src属性进行显示
+ *
+ * 如果把相对路径赋值给一个vue变量在赋予给src，都会当作普通的字符串
+ * 不会再进行打包，在经过webpack打包完之后，都会被打包到dist目录下或内存中，相对路径就会变化，你写的那个路径就会找不到文件的真身了
+ *
+ * 解决办法：js中引入图片就用import引入，让webpack把他当作模块数据，是转换成打包后的图片路径还是base64位字符串
+ *
+ * 注意只有相对路径的本地图片需要注意，以http：//开头的不需要，直接写就行
+ */
 export default {
   name: 'artList',
   data() {
@@ -76,15 +92,17 @@ export default {
         title: '', // 文章标题
         cate_id: '', // 文章分类
         content: '', // 文章的内容
-        cover_img: null // 用户选择的封面图片（null 表示没有选择任何封面）
+        cover_img: null, // 用户选择的封面图片（null 表示没有选择任何封面）
+        state: '' // 发布文章状态
       },
       pubFormRules: { // 表单的验证规则对象
         title: [
           { required: true, message: '请输入文章标题', trigger: 'blur' },
           { min: 1, max: 30, message: '文章标题的长度为1-30个字符', trigger: 'blur' }
         ],
-        cate_id: [{ required: true, message: '请选择文章标题', trigger: 'blur' }],
-        content: [{ required: true, message: '请输入文章内容', trigger: 'blur' }]
+        cate_id: [{ required: true, message: '请选择文章标题', trigger: 'change' }],
+        content: [{ required: true, message: '请输入文章内容', trigger: 'blur' }],
+        cover_img: [{ required: true, message: '请输入文章内容', trigger: 'blur' }]
       }
     }
   },
@@ -107,8 +125,8 @@ export default {
       this.dialogVisible = true
     },
     // 关闭弹框前的回调
-    async handleClose(done) {
-      const result = await this.$confirm('此操作将导致文章信息丢失, 是否继续?', '提示', {
+    handleClose(done) {
+      this.$confirm('此操作将导致文章信息丢失, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -117,7 +135,6 @@ export default {
       }).catch((error) => {
         return error
       })
-      console.log(result)
     },
     // 重置按钮
     reset() {
@@ -140,6 +157,17 @@ export default {
         const url = URL.createObjectURL(files[0])
         this.$refs.imgRef.setAttribute('src', url)
       }
+    },
+    // 发布或村委草稿按钮的回调
+    pubArticleFn(state) {
+      this.pubForm.state = state
+      this.$refs.pubFormRef.validate(valid => {
+        if (valid) {
+          console.log(this.pubForm)
+        } else {
+          return false
+        }
+      })
     }
   }
 }
