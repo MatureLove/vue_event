@@ -39,7 +39,7 @@
         </el-form-item>
         <el-form-item label="文章内容" prop="content">
           <!-- 使用 v-model 进行双向的数据绑定 -->
-          <quill-editor v-model="pubForm.content"></quill-editor>
+          <quill-editor v-model="pubForm.content" @change="onEditorChange"></quill-editor>
         </el-form-item>
         <el-form-item label="文章封面" prop="cover_img">
           <!-- 用来显示封面的图片 -->
@@ -101,7 +101,9 @@ export default {
           { min: 1, max: 30, message: '文章标题的长度为1-30个字符', trigger: 'blur' }
         ],
         cate_id: [{ required: true, message: '请选择文章标题', trigger: 'change' }],
-        content: [{ required: true, message: '请输入文章内容', trigger: 'blur' }],
+        // 因为quill-editor 不是一个表单输入框所以没有blur】和change事件，但是通过查文档他可以绑定这两个事件，我们通过给他绑定change事件
+        // 在内容发生改变的时候利用element的单独验证表单某个数据在进行验证
+        content: [{ required: true, message: '请输入文章内容', trigger: 'change' }],
         cover_img: [{ required: true, message: '请输入文章内容', trigger: 'blur' }]
       }
     }
@@ -158,7 +160,7 @@ export default {
         this.$refs.imgRef.setAttribute('src', url)
       }
     },
-    // 发布或村委草稿按钮的回调
+    // 发布或存为草稿按钮的回调
     pubArticleFn(state) {
       this.pubForm.state = state
       this.$refs.pubFormRef.validate(valid => {
@@ -168,6 +170,11 @@ export default {
           return false
         }
       })
+    },
+    // 富文本内容发生改变的回调
+    onEditorChange() {
+      // validateField对表单某个元素进行单独验证
+      this.$refs.pubFormRef.validateField('content')
     }
   }
 }
