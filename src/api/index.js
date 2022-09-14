@@ -143,3 +143,26 @@ export const deleteCateListApi = (id) => {
     }
   })
 }
+/**
+ * 发表文章
+ * @param {*} fd 表单对象formData
+ * @returns promise对象
+ */
+export const uploadCateApi = (fd) => {
+  return request({
+    url: '/my/article/add',
+    method: 'POST',
+    data: fd // 参数要的是表单对象, 不能写普通对象, axios内部会判断, 如果是表单对象, 传递的请求体会设置Content-Type: form-data与后端对应
+  })
+}
+export const getArticleListApi = ({ pagenum, pagesize, cate_id, state }) => {
+  return request({
+    url: '/my/article/list',
+    params: {
+      pagenum,
+      pagesize,
+      cate_id,
+      state
+    }
+  })
+}

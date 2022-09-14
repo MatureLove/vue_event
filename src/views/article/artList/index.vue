@@ -26,7 +26,8 @@
       <el-button type="primary" size="small" class="btn-pub" @click="Publications">发表文章</el-button>
     </div>
     <!-- 发表文章的弹框 -->
-    <el-dialog title="发表文章" :visible.sync="dialogVisible" fullscreen :before-close="handleClose">
+    <el-dialog title="发表文章" :visible.sync="dialogVisible" fullscreen :before-close="handleClose"
+      @closed="onDialogClosedFn">
       <!-- 发布文章的对话框 -->
       <el-form :model="pubForm" :rules="pubFormRules" ref="pubFormRef" label-width="100px">
         <el-form-item label="文章标题" prop="title">
@@ -39,11 +40,11 @@
         </el-form-item>
         <el-form-item label="文章内容" prop="content">
           <!-- 使用 v-model 进行双向的数据绑定 -->
-          <quill-editor v-model="pubForm.content" @change="onEditorChange"></quill-editor>
+          <quill-editor v-model="pubForm.content" @blur="onEditorChange"></quill-editor>
         </el-form-item>
         <el-form-item label="文章封面" prop="cover_img">
           <!-- 用来显示封面的图片 -->
-          <img src="@/assets/images/cover.jpg" alt="请选择图片" ref="imgRef" class="cover-img">
+          <img src="@/assets/images/cover.jpg" alt="请选择图片" ref="imgRef" class="cover-img" @click="chooseImgFn">
           <br>
           <!-- 文件选择框，默认被隐藏 -->
           <input type="file" style="display: none;" accept="image/*" ref="iptFileRef" @change="onCoverChangeFn" />
@@ -56,6 +57,14 @@
         </el-form-item>
       </el-form>
     </el-dialog>
+    <!-- 文章表格区域 -->
+    <el-table :data="artList" style="width: 100%;" border stripe>
+      <el-table-column label="文章标题" prop="title"></el-table-column>
+      <el-table-column label="分类" prop="cate_name"></el-table-column>
+      <el-table-column label="发表时间" prop="pub_date"></el-table-column>
+      <el-table-column label="状态" prop="state"></el-table-column>
+      <el-table-column label="操作"></el-table-column>
+    </el-table>
   </el-card>
 
 </template>
@@ -63,6 +72,8 @@
 <script>
 // 导入默认的封面图片
 import defaultImg from '@/assets/images/cover.jpg'
+// 引入接口发送请求
+import { getArticleListApi } from '@/api/index'
 /**
  * 标签和样式中，引入图片直接写静态路径，把路径放在js中的vue变量在赋予是不可以的
  * 原因：webpack在解析标签的时候，遇到src属性，属性值如果是一个相对路径，他会帮我们去找个这个路径的文件，然后根据文件的大小进行解析，
@@ -84,7 +95,7 @@ export default {
       // 查询参数对象
       q: {
         pagenum: 1,
-        pagesize: 2,
+        pagesize: 10,
         cate_id: '',
         state: ''
       },
@@ -103,14 +114,18 @@ export default {
         cate_id: [{ required: true, message: '请选择文章标题', trigger: 'change' }],
         // 因为quill-editor 不是一个表单输入框所以没有blur】和change事件，但是通过查文档他可以绑定这两个事件，我们通过给他绑定change事件
         // 在内容发生改变的时候利用element的单独验证表单某个数据在进行验证
-        content: [{ required: true, message: '请输入文章内容', trigger: 'change' }],
-        cover_img: [{ required: true, message: '请输入文章内容', trigger: 'blur' }]
-      }
+        content: [{ required: true, message: '请输入文章内容', trigger: 'blur' }],
+        cover_img: [{ required: true, message: '请上传文章封面', trigger: 'change' }]
+      },
+      artList: [], // 文章的列表数据
+      total: 0 // 总数据条数
     }
   },
   created() {
     // 获取文章分类
     this.getArtlist()
+    // 获取文章列表
+    this.getArticleList()
   },
   methods: {
     // 获取文章分类
@@ -133,6 +148,8 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
+        this.$refs.pubFormRef.resetFields()
+        this.$refs.imgRef.setAttribute('src', defaultImg)
         done()
       }).catch((error) => {
         return error
@@ -159,13 +176,29 @@ export default {
         const url = URL.createObjectURL(files[0])
         this.$refs.imgRef.setAttribute('src', url)
       }
+      this.$refs.pubFormRef.validateField('cover_img')
     },
     // 发布或存为草稿按钮的回调
     pubArticleFn(state) {
       this.pubForm.state = state
-      this.$refs.pubFormRef.validate(valid => {
+      this.$refs.pubFormRef.validate(async valid => {
         if (valid) {
-          console.log(this.pubForm)
+          // 创建 FormData 对象
+          const fd = new FormData()
+          // Object.keys(this.pubForm)返回这个对象中所有的键放在一个数组中
+          // 为创建的FormData 对象添加数据
+          Object.keys(this.pubForm).forEach(key => {
+            fd.append(key, this.pubForm[key])
+          })
+          // 发送请求
+          const { data } = await this.$store.dispatch('article/uploadCate', fd)
+          if (data.code !== 0) return this.$message.error('发布文章失败！')
+          this.$message.success('发布文章成功！')
+
+          // 关闭对话框
+          this.dialogVisible = false
+          // 重新获取文章列表
+          this.getArticleList()
         } else {
           return false
         }
@@ -175,6 +208,18 @@ export default {
     onEditorChange() {
       // validateField对表单某个元素进行单独验证
       this.$refs.pubFormRef.validateField('content')
+    },
+    // 对话框关闭的回调
+    onDialogClosedFn() {
+      this.$refs.pubFormRef.resetFields()
+      this.$refs.imgRef.setAttribute('src', defaultImg)
+    },
+    // 获取文章列表数据
+    async getArticleList() {
+      const { data: res } = await getArticleListApi(this.q)
+      if (res.code !== 0) return this.$message.error('获取文章列表失败!')
+      this.artList = res.data
+      this.total = res.total
     }
   }
 }

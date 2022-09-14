@@ -1,4 +1,4 @@
-import { getCateListApi, addCateListApi, updateCateListApi, deleteCateListApi } from '@/api'
+import { getCateListApi, addCateListApi, updateCateListApi, deleteCateListApi, uploadCateApi } from '@/api'
 export default {
   namespaced: true,
   actions: {
@@ -24,6 +24,10 @@ export default {
     // 删除文章分类
     async deleteCateList({ commit }, id) {
       return await deleteCateListApi(id)
+    },
+    // 发表文章
+    async uploadCate({ commit }, fd) {
+      return await uploadCateApi(fd)
     }
   },
   mutations: {
