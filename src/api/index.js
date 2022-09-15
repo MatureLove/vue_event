@@ -170,3 +170,16 @@ export const getArticleListApi = ({ pagenum, pagesize, cate_id, state }) => {
     }
   })
 }
+/**
+ * 获取文章详情
+ * @param {*} id 文章id
+ * @returns promise对象
+ */
+export const getArticleInfoApi = (id) => {
+  return request({
+    url: '/my/article/info',
+    params: {
+      id
+    }
+  })
+}

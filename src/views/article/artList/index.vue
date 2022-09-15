@@ -59,7 +59,11 @@
     </el-dialog>
     <!-- 文章表格区域 -->
     <el-table :data="artList" style="width: 100%;" border stripe>
-      <el-table-column label="文章标题" prop="title"></el-table-column>
+      <el-table-column label="文章标题" prop="title">
+        <template v-slot="{row}">
+          <el-link @click="showDetailFn(row.id)" type="primary">{{row.title}}</el-link>
+        </template>
+      </el-table-column>
       <el-table-column label="分类" prop="cate_name"></el-table-column>
       <el-table-column label="发表时间" prop="pub_date">
         <template v-slot="{row}">
@@ -69,8 +73,7 @@
       <el-table-column label="状态" prop="state"></el-table-column>
       <el-table-column label="操作">
         <template>
-          <el-button type="warning"  icon="el-icon-edit">修改文章</el-button>
-          <el-button type="danger"  icon="el-icon-delete">删除文章</el-button>
+          <el-button type="danger" icon="el-icon-delete">删除文章</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -90,6 +93,11 @@
       :page-sizes="[5, 10, 15, 20]" :page-size="q.pagesize" layout="total, sizes, prev, pager, next, jumper"
       :total="total" @prev-click="getArticleList" @next-click="getArticleList" style="margin-top:15px">
     </el-pagination>
+
+    <!-- 文章详情对话框 :before-close="handleClose"-->
+    <el-dialog title="文章预览" :visible.sync="detailVisible" width="80%">
+      <span>11</span>
+    </el-dialog>
   </el-card>
 
 </template>
@@ -98,7 +106,7 @@
 // 导入默认的封面图片
 import defaultImg from '@/assets/images/cover.jpg'
 // 引入接口发送请求
-import { getArticleListApi } from '@/api/index'
+import { getArticleListApi, getArticleInfoApi } from '@/api/index'
 /**
  * 标签和样式中，引入图片直接写静态路径，把路径放在js中的vue变量在赋予是不可以的
  * 原因：webpack在解析标签的时候，遇到src属性，属性值如果是一个相对路径，他会帮我们去找个这个路径的文件，然后根据文件的大小进行解析，
@@ -143,7 +151,9 @@ export default {
         cover_img: [{ required: true, message: '请上传文章封面', trigger: 'change' }]
       },
       artList: [], // 文章的列表数据
-      total: 0 // 总数据条数
+      total: 0, // 总数据条数
+      artDetail: {}, // 文章详情数据
+      detailVisible: false // 控制文章详情对话框的显示与隐藏
     }
   },
   created() {
@@ -272,6 +282,14 @@ export default {
         state: ''
       }
       this.getArticleList()
+    },
+    // 获取文章详情
+    async showDetailFn(id) {
+      const { data: res } = await getArticleInfoApi(id)
+      if (res.code !== 0) return this.$message.error('获取文章详情失败!')
+      this.artDetail = res.data // 存储数据
+      // 展示对话框
+      this.detailVisible = true
     }
   }
 }

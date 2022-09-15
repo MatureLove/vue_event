@@ -5,7 +5,6 @@ export default {
     // 获取文章分类列表
     async getCateList ({ commit }) {
       const { data } = await getCateListApi()
-      console.log(data)
       if (data.code === 0) {
         commit('GETCATELIST', data.data)
         return data.message
