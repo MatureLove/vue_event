@@ -154,7 +154,11 @@ export const uploadCateApi = (fd) => {
     method: 'POST',
     data: fd // 参数要的是表单对象, 不能写普通对象, axios内部会判断, 如果是表单对象, 传递的请求体会设置Content-Type: form-data与后端对应
   })
-}
+}/**
+ * 获取文章分类列表
+ * @param {*} param0 pagenum(当前页), pagesize(每页展示多少条数据), cate_id(可选)文章分类列表id, state(可选)状态
+ * @returns  promise对象
+ */
 export const getArticleListApi = ({ pagenum, pagesize, cate_id, state }) => {
   return request({
     url: '/my/article/list',
