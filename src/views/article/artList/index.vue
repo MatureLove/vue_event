@@ -72,8 +72,8 @@
       </el-table-column>
       <el-table-column label="状态" prop="state"></el-table-column>
       <el-table-column label="操作">
-        <template>
-          <el-button type="danger" icon="el-icon-delete">删除文章</el-button>
+        <template v-slot="{row}">
+          <el-button type="danger" icon="el-icon-delete" @click="deleteArt(row.id)">删除文章</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -105,6 +105,7 @@
       </div>
       <el-divider></el-divider>
       <img :src="baseURL+artDetail.cover_img" alt="">
+      <el-divider></el-divider>
       <div v-html="artDetail.content" class="detail-box"></div>
     </el-dialog>
   </el-card>
@@ -117,7 +118,7 @@ import { baseURL } from '@/utils/request'
 // 导入默认的封面图片
 import defaultImg from '@/assets/images/cover.jpg'
 // 引入接口发送请求
-import { getArticleListApi, getArticleInfoApi } from '@/api/index'
+import { getArticleListApi, getArticleInfoApi, deleteArtApi } from '@/api/index'
 /**
  * 标签和样式中，引入图片直接写静态路径，把路径放在js中的vue变量在赋予是不可以的
  * 原因：webpack在解析标签的时候，遇到src属性，属性值如果是一个相对路径，他会帮我们去找个这个路径的文件，然后根据文件的大小进行解析，
@@ -302,6 +303,24 @@ export default {
       this.artDetail = res.data // 存储数据
       // 展示对话框
       this.detailVisible = true
+    },
+    // 删除文章
+    async deleteArt(id) {
+      this.$confirm('此操作将永久删除该文章, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(async () => {
+        const { data: res } = await deleteArtApi(id)
+        if (res.code !== 0) return this.$message.error('删除失败')
+        this.$message.success('删除成功')
+        this.getArticleList(this.artList.length > 1 ? this.q.pagenum : this.q.pagenum - 1)
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
     }
   }
 }
@@ -353,10 +372,13 @@ export default {
     margin-right: 20px;
   }
 }
+
 // 修改 dialog 内部元素的样式，需要添加样式穿透
-::v-deep .detail-box{
-  img{
-    width:500px
+::v-deep .detail-box {
+  img {
+    width: 400px;
+    display: block;
+    margin: 5px;
   }
 }
 </style>
