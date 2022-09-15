@@ -96,13 +96,24 @@
 
     <!-- 文章详情对话框 :before-close="handleClose"-->
     <el-dialog title="文章预览" :visible.sync="detailVisible" width="80%">
-      <span>11</span>
+      <h1 class="title">{{artDetail.title}}</h1>
+      <div class="info">
+        <span>作者: {{artDetail.nickname || artDetail.username}}</span>
+        <span>发布时间: {{$formatDate(artDetail.pub_date)}}</span>
+        <span>所属分类: {{artDetail.cate_name}}</span>
+        <span>状态: {{artDetail.state}}</span>
+      </div>
+      <el-divider></el-divider>
+      <img :src="baseURL+artDetail.cover_img" alt="">
+      <div v-html="artDetail.content" class="detail-box"></div>
     </el-dialog>
   </el-card>
 
 </template>
 
 <script>
+// 导入默认配置的baseURL
+import { baseURL } from '@/utils/request'
 // 导入默认的封面图片
 import defaultImg from '@/assets/images/cover.jpg'
 // 引入接口发送请求
@@ -153,7 +164,8 @@ export default {
       artList: [], // 文章的列表数据
       total: 0, // 总数据条数
       artDetail: {}, // 文章详情数据
-      detailVisible: false // 控制文章详情对话框的显示与隐藏
+      detailVisible: false, // 控制文章详情对话框的显示与隐藏
+      baseURL // 默认基地址
     }
   },
   created() {
@@ -324,6 +336,28 @@ export default {
   width: 400px;
   height: 280px;
   object-fit: cover;
+}
+
+.title {
+  font-size: 24px;
+  text-align: center;
+  color: #000;
+  font-weight: 500;
+  margin: 0 0 10px 0;
+}
+
+.info {
+  font-size: 12px;
+
+  span {
+    margin-right: 20px;
+  }
+}
+// 修改 dialog 内部元素的样式，需要添加样式穿透
+::v-deep .detail-box{
+  img{
+    width:500px
+  }
 }
 </style>
 <!-- 总结：scoped不会给组件内标签添加data-v属性，你需要用::v-deep 穿透选择组件内的标签设置样式-->
