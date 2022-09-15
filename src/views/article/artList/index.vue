@@ -18,8 +18,8 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" size="small">筛选</el-button>
-          <el-button type="info" size="small">重置</el-button>
+          <el-button type="primary" size="small" @click="filterResult">筛选</el-button>
+          <el-button type="info" size="small" @click="resetRsesult">重置</el-button>
         </el-form-item>
       </el-form>
       <!-- 发表文章的按钮 -->
@@ -67,8 +67,29 @@
         </template>
       </el-table-column>
       <el-table-column label="状态" prop="state"></el-table-column>
-      <el-table-column label="操作"></el-table-column>
+      <el-table-column label="操作">
+        <template>
+          <el-button type="warning"  icon="el-icon-edit">修改文章</el-button>
+          <el-button type="danger"  icon="el-icon-delete">删除文章</el-button>
+        </template>
+      </el-table-column>
     </el-table>
+    <!--
+      size-change 每页条数发生改变触发的事件
+      current-change  当前页发生改变触发的事件
+      current-page 当前页
+      page-sizes 页面数据可以变化的条数
+      page-size 每页展示多少条数据
+      layout 分页器里面组件的布局
+      total总数据条数
+      prev-click 点击上一页触发的回调
+      next-click 点击下一页触发的会调
+    -->
+    <!-- 前提需要有总页数 和当前页 当前每页显示的条数 -->
+    <el-pagination @size-change="handleSizeChange" @current-change="getArticleList" :current-page="q.pagenum"
+      :page-sizes="[5, 10, 15, 20]" :page-size="q.pagesize" layout="total, sizes, prev, pager, next, jumper"
+      :total="total" @prev-click="getArticleList" @next-click="getArticleList" style="margin-top:15px">
+    </el-pagination>
   </el-card>
 
 </template>
@@ -99,7 +120,7 @@ export default {
       // 查询参数对象
       q: {
         pagenum: 1,
-        pagesize: 10,
+        pagesize: 5,
         cate_id: '',
         state: ''
       },
@@ -159,10 +180,6 @@ export default {
         return error
       })
     },
-    // 重置按钮
-    reset() {
-      this.$refs.lineForm.resetFields()
-    },
     // 选择封面
     chooseImgFn() {
       this.$refs.iptFileRef.click()
@@ -219,11 +236,42 @@ export default {
       this.$refs.imgRef.setAttribute('src', defaultImg)
     },
     // 获取文章列表数据
-    async getArticleList() {
+    // 在这里设置当前页默认值的好处，1.方面了我们在页码发生改变时在额外写回调函数修改页码在发送请求，直接使用当前回调就可以
+    // 2.当我们更改每页条数或者该筛选等需要重新发送请求获取数据的时候，会默认回到第一页。
+    // 还会避免一个隐藏偶发性的bug ：因为当前页和每页显示条数发生改变时都会触发回调重新获取数据，当我们先点击最后一页数据，在改变每页显示的
+    // 条数（又少变多），两个回调都会被执行，当每页展示的数据变多时，页码条数会改变，所以就有可能出现我们最后一页数据可能有可能没有，因为两个
+    // 网络请求一起发，谁先回来不一定，解决办法：每次改变每页显示条数的时候，将当前页设置为1
+    async getArticleList(pager = 1) {
+      this.q.pagenum = pager // 接受一个参数，修改当前第几页，如果不传默认是第一页
       const { data: res } = await getArticleListApi(this.q)
       if (res.code !== 0) return this.$message.error('获取文章列表失败!')
       this.artList = res.data
       this.total = res.total
+    },
+    // 修改每页显示的条数
+    handleSizeChange(val) {
+      this.q.pagesize = val // 修改每页显示的条数
+      // 重新获取数据
+      this.getArticleList()
+    },
+    // 筛选按钮的回调
+    filterResult() {
+      if (!this.q.cate_id && !this.q.state) {
+        this.$message.error('请选择筛选条件')
+      } else {
+        this.q.pagesize = 5
+        this.getArticleList()
+      }
+    },
+    // 重置按钮的回调
+    resetRsesult() {
+      this.q = {
+        pagenum: 1,
+        pagesize: 5,
+        cate_id: '',
+        state: ''
+      }
+      this.getArticleList()
     }
   }
 }
