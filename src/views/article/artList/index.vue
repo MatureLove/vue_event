@@ -314,7 +314,13 @@ export default {
         const { data: res } = await deleteArtApi(id)
         if (res.code !== 0) return this.$message.error('删除失败')
         this.$message.success('删除成功')
-        this.getArticleList(this.artList.length > 1 ? this.q.pagenum : this.q.pagenum - 1)
+        // 当一个页面只有一条数据时，并且当前页不是第一页，我们就让当前页减1，当在第一页的时候，就让他保持当前页
+        if (this.artList.length === 1) {
+          if (this.q.pagenum > 1) {
+            this.q.pagenum--
+          }
+        }
+        this.getArticleList()
       }).catch(() => {
         this.$message({
           type: 'info',
